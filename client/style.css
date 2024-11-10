@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+}
+
+h1 {
+color: #333;
+}
+
+form {
+margin-bottom: 20px;
+}
+
+input {
+padding: 8px;
+margin: 5px;
+}
+
+button {
+padding: 8px;
+background-color: #007bff;
+color: #fff;
+border: none;
+}
+
+#books-list {
+margin-top: 20px;
+}
+
+.book-item {
+border: 1px solid #ddd;
+padding: 10px;
+margin: 5px;
+}
