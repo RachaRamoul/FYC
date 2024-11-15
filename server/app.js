@@ -11,12 +11,12 @@ const pool = new Pool({
   port: 5432,
 });
 
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, '../client')));
 app.use(express.json());
 
 // Route for the homepage
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'index.html'));
+    res.sendFile(path.join(__dirname, '../client', 'index.html'));
 });
   
 
