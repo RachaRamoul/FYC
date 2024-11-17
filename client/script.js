@@ -6,8 +6,8 @@ document.getElementById("book-form").addEventListener("submit", async (e) => {
     const theme = document.getElementById("theme").value;
 
     try {
-        // Envoie de la requête POST pour ajouter un livre
-        const response = await fetch("/add-book", {
+        // Envoi de la requête POST pour ajouter un livre
+        const response = await fetch("/api/books", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ title, author, theme }),
@@ -32,11 +32,11 @@ document.getElementById("book-form").addEventListener("submit", async (e) => {
 async function loadBooks() {
     try {
         // Récupération de la liste des livres
-        const res = await fetch("/data");
+        const res = await fetch("/api/books");
         const books = await res.json();
 
         // Vérification de la réponse
-        console.log("Books data:", books);  // Ajout de cette ligne pour voir la réponse
+        console.log("Books data:", books); // Ajout de cette ligne pour voir la réponse
 
         const booksList = document.getElementById("books-list");
         
