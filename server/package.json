@@ -6,6 +6,8 @@
         "start": "nodemon ./app.js"
     },
     "dependencies": {
+        "@grpc/grpc-js": "^1.12.2",
+        "@grpc/proto-loader": "^0.7.13",
         "express": "^4.17.1",
         "pg": "^8.5.1"
     },

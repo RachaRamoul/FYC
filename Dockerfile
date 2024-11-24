@@ -13,9 +13,14 @@ RUN npm install -g nodemon
 # Copy the server code and client directory into the container
 COPY server/ /usr/src/app/server
 COPY client/ /usr/src/app/client
+COPY grpc/ /usr/src/app/grpc
 
-# Expose port 3000
+EXPOSE 50051 
+
 EXPOSE 3000
 
-# Command to run the application
-CMD ["nodemon", "server/app.js"]
+COPY start.sh /usr/src/app/start.sh
+
+RUN chmod +x /usr/src/app/start.sh
+
+CMD ["/usr/src/app/start.sh"]

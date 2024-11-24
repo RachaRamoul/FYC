@@ -1,36 +1,40 @@
-const query = require('./query');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const path = require('path');
 
-// Obtenir la liste des livres
-async function getBooks() {
-  return await query(`
-    SELECT books.title, authors.name AS author, themes.name AS theme
-    FROM books
-    JOIN authors ON books.author_id = authors.id
-    JOIN themes ON books.theme_id = themes.id
-  `);
-}
 
-// Ajouter un livre
-async function addBook(title, author, theme) {
-  // Vérifier ou insérer l'auteur
-  let authorResult = await query(`SELECT id FROM authors WHERE name = $1`, [author]);
-  if (authorResult.length === 0) {
-    authorResult = await query(`INSERT INTO authors (name) VALUES ($1) RETURNING id`, [author]);
-  }
-  const authorId = authorResult[0].id;
+const protoPath = path.join(__dirname, '../../grpc/library.proto');
+const packageDefinition = protoLoader.loadSync(protoPath, { keepCase: true });
+const libraryProto = grpc.loadPackageDefinition(packageDefinition).LibraryService;
 
-  // Vérifier ou insérer le thème et récupérer le theme_id
-  let themeResult = await query(`SELECT id FROM themes WHERE name = $1`, [theme]);
-  if (themeResult.length === 0) {
-    themeResult = await query(`INSERT INTO themes (name) VALUES ($1) RETURNING id`, [theme]);
-  }
-  const themeId = themeResult[0].id;
+const PORT = 50051;
 
-  // Insérer le livre avec les author_id et theme_id récupérés
-  await query(
-    `INSERT INTO books (title, author_id, theme_id) VALUES ($1, $2, $3)`,
-    [title, authorId, themeId]
-  );
-}
+const client = new libraryProto(`localhost:${PORT}`, grpc.credentials.createInsecure());
+
+
+const getBooks = async () => {
+  return new Promise((resolve, reject) => {
+    client.GetBooks({}, (error, response) => {
+      if (error) {
+        reject(new Error(`Une erreur est survenue: ${error.details}`));
+      } else {
+        resolve(response.books);
+      }
+    });
+  });
+};
+
+const addBook = async (title, author, theme) => {
+  const book = { title, author, theme };
+  return new Promise((resolve, reject) => {
+    client.AddBook(book, (error, response) => {
+      if (error) {
+        reject(new Error(`Une erreur est survenue: ${error.details}`));
+      } else {
+        resolve(response.message);
+      }
+    });
+  });
+};
 
 module.exports = { getBooks, addBook };
