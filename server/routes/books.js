@@ -1,27 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { getBooks, addBook } = require('../services/booksService');
+const client = require('../grpcClient');
 
 // Route pour obtenir les données des livres
 router.get('/', async (req, res) => {
-  try {
-    const books = await getBooks();
-    res.json(Array.isArray(books) ? books : []);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  client.GetBooks({}, (error, response) => {
+    if (error) {
+      return res.status(500).json({ error: error.details });
+    }
+    res.json(Array.isArray(response.books) ? response.books : []);
+  });
 });
 
+
 // Route pour ajouter un livre
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
   const { title, author, theme } = req.body;
-  try {
-    await addBook(title, author, theme);
-    res.status(201).json({ message: 'Book added' });
-  } catch (error) {
-    console.error("Failed to add book:", error.message);
-    res.status(500).json({ error: error.message });
-  }
+  const book = { title, author, theme };
+  client.AddBook(book, (error, response) => {
+    if (error) {
+      return res.status(500).json({ error: error.details });
+    }
+    res.status(201).json({ message: response.message });
+  });
 });
 
 module.exports = router;
