@@ -1,4 +1,4 @@
-const pool = require('../db/db');
+const pool = require('./db');
 
 // Fonction pour exécuter une requête SQL
 async function query(sql, params) {
